@@ -5,9 +5,9 @@ Cliente para la recepción de los archivos transmitidos por el servidor broadcas
 python ./BroadcastClient.py [-v] [--help]
 ```
 ### Options
-  -v 
+  - -v 
     Verbose. Imprime todos los mensajes que indican el estado del cliente en la terminal.
-  --help
+  - --help
     Imprime el modo de uso de este comando junto con las opciones.
 #### Troubleshooting
 Si llegara a presentarse un error `Utils is not a module`, ejecutar el siguiente comando en el directorio Client:
