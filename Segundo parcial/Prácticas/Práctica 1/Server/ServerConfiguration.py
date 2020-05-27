@@ -8,6 +8,8 @@ class ServerConfiguration:
     def __init__(self):
         #Socket
         self.serverSocket = None
+        #Dirección broadcast
+        self.broadcastAddress = '<broadcast>'
         #Opciones internas habilitables mediante linea de comandos
         self.verbose = False
         self.cacheFileNames = True
@@ -20,6 +22,8 @@ class ServerConfiguration:
     def getSocket(self):
         return self.serverSocket
 
+    def getBroadcastAddress(self):
+        return self.broadcastAddress
     
     def printVerbose(self, messageToPrint):
         if self.verbose:
@@ -34,9 +38,10 @@ class ServerConfiguration:
         exit(status)
 
     def printUseMode(self):
-        print('\nModo de uso: python3 BroadcastServer.py [-v] [-t numeroSegundos] [--no-cache]\n')
+        print('\nModo de uso: python3 BroadcastServer.py [-v] [-a address] [-t numeroSegundos] [--no-cache]\n')
 
     def printHelp(self):
+        print('[-a address]: Dirección broadcast, si no se especifica se usa <broadcast>\n')
         print('[-v]: Modo verbose, se mouestran las impresiones de las acciones generadas\n')
         print('[-t segundos]: Se modificará el tiempo de espera entre cada retransmisión (default: 1s)\n')
         print('[--no-cache]: Se escanearán los archivos en el directorio en cada transmisión\n')
@@ -51,6 +56,12 @@ class ServerConfiguration:
                 self.verbose = True
             if(arg == '--no-cache'):
                 self.cacheFileNames = False
+            if(arg == '-a'):
+                index += 2
+                if len(sys.argv) <= index:
+                    self.printUseMode()
+                    self.exitProgram()
+                self.broadcastAddress = sys.argv[index]
             if(arg == '-t'): 
                 index += 2
                 if len(sys.argv) <= index:

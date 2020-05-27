@@ -13,6 +13,8 @@ class BroadcastServer:
         self.server = None
         #ServerConfiguration instance
         self.serverConfiguration = None
+        #Broadcast address
+        self.broadcastAddress = None
         #Current FileManager instance
         self.fileManager = None
         #Inicialización
@@ -21,12 +23,13 @@ class BroadcastServer:
     def initialization(self):
         self.serverConfiguration = ServerConfiguration()
         self.server = self.serverConfiguration.getSocket()
+        self.broadcastAddress = self.serverConfiguration.getBroadcastAddress()
     
 
     def sendMessage(self, message):
         if(type(message) != bytes):
             message = message.encode('utf-8')
-        self.server.sendto(message, ('<broadcast>', 37020))
+        self.server.sendto(message, (self.broadcastAddress, 37020))
         return
 
     def sendInitialSequenceMessage(self):
