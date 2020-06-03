@@ -1,0 +1,19 @@
+{
+    "routers":[
+        {
+            "name": "Router1",
+            "address": "10.10.1.1",
+            "fileName": "R1"
+        },
+        {
+            "name": "Router2",
+            "address": "10.10.3.1",
+            "fileName": "R2"
+        },
+        {
+            "name": "Router3",
+            "address": "10.10.4.1",
+            "fileName": "R3"
+        }
+    ]
+}
