@@ -1,6 +1,7 @@
 import json
 import tftpy
 from os import system, path
+from RouterTelnetClient import RouterTelnetClient
 
 #CONSTANTES
 
@@ -10,8 +11,12 @@ ROUTERS = 'routers'
 NAME = 'name'
 ADDRESS = 'address'
 FILE_NAME = 'fileName'
-#Puerto del servidor TFTP
+#Parámetros de la comunicación Telnet
+TELNET_USER = 'telnetUser'
+TELNET_PASSWORD = 'telnetPassword'
+#Parámetros del servidor TFTP (en el host, sin embargo, no se pone localhost por si se desea ejecutar este script desde otro cliente en la topología)
 TFTP_PORT = 69
+TFTP_SERVER_ADDRESS = '10.10.2.4'
 #Directorio que contendrá los resultados
 ROUTERS_ROOT_DIRECTORY = 'Routers'
 #Comandos de sistema operativo
@@ -23,6 +28,8 @@ MOVE_ROUTER_FILE_COMMAND = 'mv %s Routers/%s'
 
 #Lista de routers extraidos de archivo de configuración
 routers = []
+
+telnetConnection = None
 
 #FUNCIONES
 '''
@@ -78,15 +85,32 @@ def initialization():
         createRoutersDirectories()
     return
 
+
+def setTelnetConnectionCredentials(router, telnetConnection):
+    user = router[TELNET_USER]
+    password = router[TELNET_PASSWORD]
+    telnetConnection.setTelnetClientCredentials(user, password)
+
+def initTelnetCommunication(router):
+    global telnetConnection
+    routerAddress = router[ADDRESS] #Obtiene la dirección del servidor TFTP del router mediante su llave address
+    outputFileName = router[FILE_NAME]
+    telnetConnection = RouterTelnetClient(routerAddress, outputFileName)
+    setTelnetConnectionCredentials(router, telnetConnection)
+
+def backupRouterFileInTFTPServer(router):
+    global telnetConnection
+    telnetConnection.executeBackup()
+
 '''
 Obtiene el archivo de configuración del servidor TFTP del router 
 '''   
 def getTFTPFile(router):
     fileName = router[FILE_NAME] #Obtiene el nombre del archivo de configuración del router mediante su llave filename
-    tftpServerAddress = router[ADDRESS] #Obtiene la dirección del servidor TFTP del router mediante su llave address
-    print('Obteniendo archivo %s desde el servidor TFTP [%s:%d]' % (fileName, tftpServerAddress, TFTP_PORT))
-    client = tftpy.TftpClient(tftpServerAddress, TFTP_PORT) 
+    print('Obteniendo archivo %s desde el servidor TFTP [%s:%d]' % (fileName, TFTP_SERVER_ADDRESS, TFTP_PORT))
+    client = tftpy.TftpClient(TFTP_SERVER_ADDRESS, TFTP_PORT) 
     client.download(fileName, fileName)
+    print('Archivo %s obtenido exitosamente!' % fileName)
     return
 
 '''
@@ -102,6 +126,8 @@ Obtiene el archivo de configuración de cada router y lo coloca en su correspond
 def getRoutersFiles():
     global routers
     for router in routers:
+        initTelnetCommunication(router)
+        backupRouterFileInTFTPServer(router)
         getTFTPFile(router)
         moveFileToRouterFolder(router)
 

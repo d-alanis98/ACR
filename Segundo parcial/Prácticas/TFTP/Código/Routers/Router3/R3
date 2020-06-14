@@ -10,6 +10,7 @@ hostname R3
 boot-start-marker
 boot-end-marker
 !
+enable password admin123
 !
 no aaa new-model
 memory-size iomem 5
@@ -43,6 +44,7 @@ multilink bundle-name authenticated
 !
 !
 !
+username admin privilege 15 secret 5 $1$w0Us$Gsc9ClG.p1y1lALBa9fIs.
 archive
  log config
   hidekeys
@@ -141,7 +143,11 @@ line aux 0
  privilege level 15
  logging synchronous
 line vty 0 4
- login
+ login local
+ transport input telnet
+line vty 5 15
+ login local
+ transport input telnet
 !
 !
 end
